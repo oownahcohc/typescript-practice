@@ -3,12 +3,12 @@
 // import Container from "typedi";
 import { Request, Response } from "express";
 import { LoginDTO, TokenDTO, SignupDTO } from "../../interface/authDTO";
-import responseError from "../../constant/responseError";
+import Error from "../../constant/responseError";
 import { User } from "../../models";
 import AuthService from "../../services/authService";
 import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
-import resultCode from "../../constant/resultCode";
-import resultMessage from "../../constant/resultMessage";
+import sc from "../../constant/resultCode";
+import rm from "../../constant/resultMessage";
 
 
 // 회원가입
@@ -18,56 +18,27 @@ const signup = async (req: Request, res: Response) => {
         //const authServiceInstance = Container.get(AuthService);
         const authServiceInstance = new AuthService(User)
         const data = await authServiceInstance.SignUp(signupDto);
-        if (data === responseError.NULL_VALUE) {
-            return ErrorResponse(
-                res, 
-                resultCode.BAD_REQUEST, 
-                resultMessage.NULL_VALUE
-            );
+        if (data === Error.NULL_VALUE) {
+            return ErrorResponse(res, sc.BAD_REQUEST, rm.NULL_VALUE);
         }
-        else if (data === responseError.WRONG_EMAIL_CONVENTION) {
-            return ErrorResponse(
-                res, 
-                resultCode.BAD_REQUEST, 
-                resultMessage.WRONG_EMAIL_CONVENTION
-            );
+        else if (data === Error.WRONG_EMAIL_CONVENTION) {
+            return ErrorResponse(res, sc.BAD_REQUEST, rm.WRONG_EMAIL_CONVENTION);
         }
-        else if (data === responseError.WRONG_PASSWORD_CONVENTION) {
-            return ErrorResponse(
-                res, 
-                resultCode.BAD_REQUEST, 
-                resultMessage.WRONG_PASSWORD_CONVENTION
-            );
+        else if (data === Error.WRONG_PASSWORD_CONVENTION) {
+            return ErrorResponse(res, sc.BAD_REQUEST, rm.WRONG_PASSWORD_CONVENTION);
         }
-        else if (data === responseError.USER_ALREADY_EXIST) {
-            return ErrorResponse(
-                res, 
-                resultCode.BAD_REQUEST, 
-                resultMessage.USER_ALREADY_EXIST
-            );
+        else if (data === Error.USER_ALREADY_EXIST) {
+            return ErrorResponse(res, sc.BAD_REQUEST, rm.USER_ALREADY_EXIST);
         }
-        else if (data === responseError.FAIL_SIGNUP) {
-            return ErrorResponse(
-                res,
-                resultCode.BAD_REQUEST,
-                resultMessage.FAIL_SIGNUP
-            );
+        else if (data === Error.FAIL_SIGNUP) {
+            return ErrorResponse(res,sc.BAD_REQUEST,rm.FAIL_SIGNUP);
         }
         else {
-            return SuccessResponse(
-                res,
-                resultCode.CREATED,
-                resultMessage.CREATED_USER,
-                data
-            );
+            return SuccessResponse(res, sc.CREATED, rm.CREATED_USER, data);
         }
     } catch (error) {
         console.log(error);
-        ErrorResponse(
-            res,
-            resultCode.INTERNAL_SERVER_ERROR,
-            resultMessage.INTERNAL_SERVER_ERROR
-        );
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -80,18 +51,12 @@ const login = async (req: Request, res: Response) => {
         /** @Error1 필수 요청 값 누락 */
         /** @Error2 존재하지 않는 유저 */
         /** @Error3 비밀번호가 일치하지 않음 */
-        return SuccessResponse(
-            res,
-            resultCode.OK,
-            resultMessage.LOGIN_SUCCESS,
+        return SuccessResponse(res,sc.OK,rm.LOGIN_SUCCESS,
             data
         );
     } catch (error) {
-        console.log(error);
-        ErrorResponse(
-            res,
-            resultCode.INTERNAL_SERVER_ERROR,
-            resultMessage.INTERNAL_SERVER_ERROR
+        console.error(error);
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR
         );
     }
 };
@@ -102,19 +67,10 @@ const logout = async (req: Request, res: Response) => {
     try {
         const authServiceInstance = new AuthService(User);
         const data = await authServiceInstance.LogOut(userDto);
-        return SuccessResponse(
-            res,
-            resultCode.OK,
-            resultMessage.LOGOUT_SUCCESS,
-            data
-        );
+        return SuccessResponse(res,sc.OK,rm.LOGOUT_SUCCESS,data);
     } catch (error) {
         console.log(error);
-        ErrorResponse(
-            res,
-            resultCode.INTERNAL_SERVER_ERROR,
-            resultMessage.INTERNAL_SERVER_ERROR
-        );
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -127,19 +83,10 @@ const reissueToken = async (req: Request, res: Response) => {
         /** @Error1 필수 요청 값 누락 */
         /** @Error2 리프레시 토큰도 만료 => 재로그인 요청 */
         /** @Error3 해당 유저 없음 */
-        return SuccessResponse(
-            res,
-            resultCode.OK,
-            resultMessage.REISSUE_TOKEN,
-            data
-        );
+        return SuccessResponse(res,sc.OK,rm.REISSUE_TOKEN,data);
     } catch (error) {
         console.log(error);
-        ErrorResponse(
-            res,
-            resultCode.INTERNAL_SERVER_ERROR,
-            resultMessage.INTERNAL_SERVER_ERROR
-        );
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
     }
 
 };
@@ -155,16 +102,16 @@ const socialLogin = async (req: Request, res: Response) => {
     //     /** @Error3 해당 유저 없음 */
     //     return SuccessResponse(
     //         res,
-    //         resultCode.OK,
-    //         resultMessage.REISSUE_TOKEN,
+    //         sc.OK,
+    //         rm.REISSUE_TOKEN,
     //         data
     //     );
     // } catch (error) {
     //     console.log(error);
     //     ErrorResponse(
     //         res,
-    //         resultCode.INTERNAL_SERVER_ERROR,
-    //         resultMessage.INTERNAL_SERVER_ERROR
+    //         sc.INTERNAL_SERVER_ERROR,
+    //         rm.INTERNAL_SERVER_ERROR
     //     );
     // }
 }
