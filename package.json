@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/oownahcohc/zanzan-migrate#readme",
   "dependencies": {
+    "@types/lodash": "^4.14.179",
     "axios": "^0.26.0",
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
