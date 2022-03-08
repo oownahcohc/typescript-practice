@@ -1,3 +1,4 @@
+import { Axios } from 'axios';
 import { User } from '../models/users';
 
 declare global {
