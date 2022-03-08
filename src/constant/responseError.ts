@@ -1,4 +1,4 @@
-enum Error {
+const enum Error {
     NULL_VALUE = 1, // 필요한 값이 없을 때
     WRONG_EMAIL_CONVENTION, // 이메일 형식이 잘못 되었을 때
     WRONG_NICKNAME_CONVENTION, // 닉네임 형식이 잘못 되었을 때
