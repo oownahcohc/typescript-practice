@@ -1,18 +1,18 @@
 export interface SignupDTO {
-    email: string;
-    password: string,
-    nickname: string;
+    readonly email: string;
+    readonly password: string,
+    readonly nickname?: string;
 }
 
 
 export interface LoginDTO {
-    email: string;
-    password: string,
+    readonly email: string;
+    readonly password: string,
 }
 
 
 export interface TokenDTO {
-    accessToken: string;
-    refreshToken: string;
+    readonly accessToken: string;
+    readonly refreshToken?: string;
 }
 
