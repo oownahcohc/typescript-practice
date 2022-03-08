@@ -36,7 +36,7 @@ export default {
     },
 
     // 토큰 검증 함수
-    verifyToken: (token: any) => {
+    verifyToken: (token: string) => {
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRETE);

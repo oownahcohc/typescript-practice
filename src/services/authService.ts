@@ -30,7 +30,7 @@ class AuthService {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
             const newUser = await this.userModel.create({
-                ...signupDto,
+                ...signupDto, // 전개 연산자: signupDto안에 담긴거 쫙 펼쳐줌 ㅋㅋ
                 password: hashedPassword,
             });
             /** @Error5 유저 생성 실패 */
@@ -45,14 +45,16 @@ class AuthService {
 
 
     public async LogIn (loginDto: LoginDTO) {
-        const { email, password } = loginDto;   
+        const { email, password } = loginDto;
         /** @Error1 필수 요청 값 누락 */
         if(!email || !password) return Error.NULL_VALUE;
+        //if (loginDto?.email || loginDto?.password) return Error.NULL_VALUE;
 
         try {
             const isUser = await this.userModel.findOne({ where: { email } });
             /** @Error2 존재하지 않는 유저 */
             if (!isUser) return Error.NON_EXISTENT_USER;
+
             const isMatch = await bcrypt.compare(password, isUser.password);
             /** @Error3 비밀번호가 일치하지 않음 */
             if (!isMatch) return Error.PW_NOT_CORRECT;
@@ -64,6 +66,7 @@ class AuthService {
             }, {
                 where: { email }
             });
+
             return {
                 user: {
                     social: isUser.social,
