@@ -19,5 +19,5 @@ export const SuccessResponse = (
 ) => {
     data.resultCode = resultCode;
     data.resultMessage = resultMessage,
-    res.status(resultCode).json({ data });
+    res.status(resultCode).json(data);
 }
