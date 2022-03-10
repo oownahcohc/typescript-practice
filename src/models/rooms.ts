@@ -28,17 +28,17 @@ export default class Room extends Model {
     @AutoIncrement
     @Unique
     @Column
-    id: number;
+    id!: number;
     
     // 방장 아이디
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
-    userId: number
+    userId!: number
 
     @AllowNull(true)
     @Column(DataType.STRING(50))
-    roomTitle: string;
+    roomTitle!: string;
 
     @BelongsTo(() => User)
-    user: User
+    user!: User
 }

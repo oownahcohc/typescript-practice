@@ -29,32 +29,32 @@ export default class Chat extends Model {
     @AutoIncrement
     @Unique
     @Column(DataType.INTEGER)
-    id: number;
+    id!: number;
 
     // 어떤 채팅방인지 구분
     @AllowNull(false)
     @ForeignKey(() => Room)
     @Column(DataType.INTEGER)
-    roomId: number;
+    roomId!: number;
 
     // 채팅 날린 유저의 아이디
     @AllowNull(false)
     @Column(DataType.INTEGER)
-    userId: number;
+    userId!: number;
 
     // 유저가 채팅 날린거 => ex) 뭐해?
     @Column(DataType.STRING)
-    chat: string;
+    chat!: string;
 
     @AllowNull(true)
     @Column(DataType.ARRAY(DataType.STRING))
-    images: string[];
+    images!: string[];
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    isDeleted: boolean;  
+    isDeleted!: boolean;  
 
     @BelongsTo(() => Room)
-    room: Room
+    room!: Room
 
 }

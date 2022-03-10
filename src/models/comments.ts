@@ -32,34 +32,34 @@ export default class Comment extends Model { // 모델 설정
     @AutoIncrement
     @Unique
     @Column
-    id: number;
+    id!: number;
 
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
-    userId: number;
+    userId!: number;
 
     @AllowNull(true)
     @ForeignKey(() => Post)
     @Column(DataType.INTEGER)
-    postId: number;
+    postId!: number;
 
     @AllowNull(true)
     @Column(DataType.INTEGER)
-    commentGroupId: number;
+    commentGroupId!: number;
 
     @AllowNull(true)
     @Column(DataType.INTEGER)
-    depth: number;
+    depth!: number;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    isDeleted: boolean;
+    isDeleted!: boolean;
 
     @BelongsTo(() => User)
-    user: User;
+    user!: User;
 
     @BelongsTo(() => Post)
-    post: Post
+    post!: Post
 
     @HasMany(() => CommentLike)
     commentLikes!: CommentLike[];

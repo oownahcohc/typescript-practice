@@ -28,23 +28,23 @@ export default class CommentLike extends Model { // 모델 설정
     @AutoIncrement
     @Unique
     @Column
-    id: number;
+    id!: number;
 
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
-    userId: number;
+    userId!: number;
 
     @ForeignKey(() => Comment)
     @Column(DataType.INTEGER)
-    commentId: number;
+    commentId!: number;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    isLiked: boolean;
+    isLiked!: boolean;
 
     @BelongsTo(() => Comment)
-    comment: Comment;
+    comment!: Comment;
 
     @BelongsTo(() => User)
-    user: User;
+    user!: User;
 }

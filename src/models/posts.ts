@@ -12,8 +12,8 @@ import {
     Table, 
     Unique } from "sequelize-typescript"
 import Comment from "./comments";
-import PostDisLike from "./postdislikes";
-import PostLike from "./postlikes";
+import PostDisLike from "./postDislikes";
+import PostLike from "./postLikes";
 import User from "./users";
 
 
@@ -33,30 +33,30 @@ export default class Post extends Model {
     @AutoIncrement
     @Unique
     @Column(DataType.INTEGER)
-    id: number;
+    id!: number;
 
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
-    userId: number;
+    userId!: number;
 
     @AllowNull(false)
     @Column(DataType.STRING(50))
-    title: string;
+    title!: string;
 
     @AllowNull(false)
     @Column(DataType.TEXT)
-    myStory: string;
+    myStory!: string;
 
     @AllowNull(true)
     @Column(DataType.ARRAY(DataType.STRING))
-    imageUrl: string[];
+    imageUrl!: string[];
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    isDeleted: boolean;  
+    isDeleted!: boolean;  
 
     @BelongsTo(() => User)
-    user: User
+    user!: User
 
     @HasMany(() => Comment)
     comments!: Comment[];

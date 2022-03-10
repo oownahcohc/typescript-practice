@@ -29,23 +29,23 @@ export default class PostDisLike extends Model {
     @AutoIncrement
     @Unique
     @Column(DataType.INTEGER)
-    id: number;
+    id!: number;
 
     @ForeignKey(() => Post)
     @Column(DataType.INTEGER)
-    postId: number;
+    postId!: number;
 
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
-    userId: number;
+    userId!: number;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    isLiked: boolean;
+    isLiked!: boolean;
 
     @BelongsTo(() => Post)
-    post: Post;
+    post!: Post;
 
     @BelongsTo(() => User)
-    user: User;
+    user!: User;
 }

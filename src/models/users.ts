@@ -13,8 +13,8 @@ import {
 import CommentDislike from "./commentDislikes";
 import CommentLike from "./commentLikes";
 import Comment from "./comments";
-import PostDisLike from "./postdislikes";
-import PostLike from "./postlikes";
+import PostDisLike from "./postDislikes";
+import PostLike from "./postLikes";
 import Post from "./posts";
 import Room from "./rooms";
 
@@ -35,29 +35,29 @@ export default class User extends Model {
     @AutoIncrement
     @Unique
     @Column(DataType.INTEGER)
-    public readonly id: number;
+    public readonly id!: number;
 
     @Default("local")
     @Column(DataType.STRING(10))
-    public social: string;
+    public social!: string;
 
     @AllowNull(true)
     @IsEmail
     @Column(DataType.STRING(30))
-    public email: string;
+    public email!: string;
 
     @AllowNull(false)
     @Column(DataType.STRING(100))
-    public password: string;
+    public password!: string;
 
     @Unique
     @AllowNull(false)
     @Column(DataType.STRING(30))
-    public nickname: string;
+    public nickname!: string;
 
     @AllowNull(true)
     @Column(DataType.TEXT)
-    public token: string;   
+    public token!: string;   
 
     @HasMany(() => Comment)
     comments!: Comment[];
