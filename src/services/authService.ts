@@ -1,17 +1,16 @@
 import { Service } from "typedi";
-import { LoginDTO, TokenDTO, SignupDTO } from "../interface/authDTO";
+import { LoginDTO, TokenDTO, SignupDTO, UserResponse } from "../interface/authDTO";
 import bcrypt from "bcryptjs";
-import jwtHandler from "../modules/jwtHandler";
+import jwt from "jsonwebtoken";
 import Error from "../constant/responseError";
 import isEmail from "validator/lib/isEmail";
-import { passwordValidator } from "../modules/validator";
+import { passwordValidator, verifyToken } from "../modules/validator";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
 @Service()
 class AuthService {
     constructor(private userModel) {}
-
 
     public async SignUp (signupDto: SignupDTO) {
         const { email, password, nickname } = signupDto;
@@ -59,8 +58,9 @@ class AuthService {
             /** @Error3 비밀번호가 일치하지 않음 */
             if (!isMatch) return Error.PW_NOT_CORRECT;
             
-            const { accessToken } = jwtHandler.issueAccessToken(isUser);
-            const { refreshToken } = jwtHandler.issueRefreshToken();
+            // TODO: type 좁히기 생각해보자
+            const accessToken = this.issueAccessToken(isUser as UserResponse);
+            const refreshToken = this.issueRefreshToken();
             await this.userModel.update({
                 token: refreshToken,
             }, {
@@ -104,7 +104,8 @@ class AuthService {
         if (!accessToken || !refreshToken) return Error.NULL_VALUE;
 
         try {
-            const refreshTokenDecoded = jwtHandler.verifyToken(refreshToken);
+            //const refreshTokenDecoded = jwtHandler.verifyToken(refreshToken);
+            const refreshTokenDecoded = verifyToken(refreshToken);
             /** @Error2 리프레시 토큰도 만료 => 재로그인 요청 */
             if (refreshTokenDecoded === TOKEN_EXPIRED || refreshTokenDecoded === TOKEN_INVALID) {
                 return Error.TOKEN_EXPIRES;
@@ -113,7 +114,9 @@ class AuthService {
             /** @Error3 해당 유저 없음 */
             if (!isUser) return Error.NON_EXISTENT_USER;
 
-            const { accessToken } = jwtHandler.issueAccessToken(isUser);
+            //const { accessToken } = jwtHandler.issueAccessToken(isUser);
+            // TODO: type 좁히기 생각해보자
+            const accessToken = this.issueAccessToken(isUser);
             return {
                 user: {
                     nickname: isUser.nickname,
@@ -125,6 +128,29 @@ class AuthService {
             console.log(error);
             throw error;
         }
+    }
+
+    
+    private issueAccessToken (user: UserResponse): string {
+        const payload = { 
+            id: user.id,
+            social: user.social,
+            email: user.email,
+            nickname: user.nickname
+        };
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRETE, {
+            issuer: process.env.JWT_ISSUER,
+            expiresIn: process.env.JWT_AC_EXPIRES,
+        });
+        return accessToken;
+    }
+
+    private issueRefreshToken (): string {
+        const refreshToken = jwt.sign({}, process.env.JWT_SECRETE, {
+            issuer: process.env.JWT_ISSUER,
+            expiresIn: process.env.JWT_RF_EXPIRES,
+        });
+        return refreshToken;
     }
 }
 
