@@ -4,7 +4,7 @@ import rm from "../../constant/resultMessage";
 import { TokenDTO } from "../../interface/authDTO";
 import { User } from "../../models";
 import { ErrorResponse } from "../../modules/apiResponse";
-import jwtHandler from "../../modules/jwtHandler";
+import { verifyToken } from "../../modules/validator";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
@@ -19,7 +19,7 @@ const isAuth = async (
     }
 
     try {
-        const accessTokenDecoded = jwtHandler.verifyToken(accessToken);
+        const accessTokenDecoded = verifyToken(accessToken);
 
         if (accessTokenDecoded === TOKEN_EXPIRED) {
             return ErrorResponse(res, sc.UNAUTHORIZED, rm.TOKEN_EXPIRED);
