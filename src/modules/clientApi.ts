@@ -2,7 +2,7 @@ import qs from "qs";
 import _ from "lodash";
 import axios, { AxiosResponse } from "axios";
 
-const NaverAuthAPI = async (naverAccessToken: string) => {
+export const NaverAuthAPI = async (naverAccessToken: string) => {
     try {
         const apiUrl = `https://openapi.naver.com/v1/nid/me`;
         const userData: AxiosResponse<any> = await axios(apiUrl, {
@@ -12,6 +12,7 @@ const NaverAuthAPI = async (naverAccessToken: string) => {
             }
         });
         const naverUser = userData.data.response;
+        return naverUser;
     } catch (error) {
         console.error("❌ Cannot find Naver User: ", error);
         throw new Error(error);

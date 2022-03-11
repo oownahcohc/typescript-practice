@@ -2,7 +2,7 @@
 // service 의존성 주입을 하고, dto형식, 응답 형식에 대한 ~
 // import Container from "typedi";
 import { Request, Response } from "express";
-import { LoginDTO, TokenDTO, SignupDTO } from "../../interface/authDTO";
+import { LoginDTO, TokenDTO, SignupDTO, SocialDTO } from "../../interface/authDTO";
 import Error from "../../constant/responseError";
 import { User } from "../../models";
 import AuthService from "../../services/authService";
@@ -73,18 +73,6 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
-// 로그아웃
-const logout = async (req: Request, res: Response) => {
-    const userDto = req.user as LoginDTO
-    try {
-        const authServiceInstance = new AuthService(User);
-        const data = await authServiceInstance.LogOut(userDto);
-        return SuccessResponse(res,sc.OK,rm.LOGOUT_SUCCESS,data);
-    } catch (error) {
-        console.log(error);
-        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
-    }
-};
 
 // 토큰 재발급
 const reissueToken = async (req: Request, res: Response) => {
@@ -110,34 +98,39 @@ const reissueToken = async (req: Request, res: Response) => {
         console.log(error);
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
     }
-
+    
 };
 
 // 소셜 로그인
 const socialLogin = async (req: Request, res: Response) => {
-    // const reissueTokenDto = req.headers as unknown as TokenDTO
-    // try {
-    //     const authServiceInstance = new AuthService(User);
-    //     const data = await authServiceInstance.ReissueToken(reissueTokenDto);
-    //     /** @Error1 필수 요청 값 누락 */
-    //     /** @Error2 리프레시 토큰도 만료 => 재로그인 요청 */
-    //     /** @Error3 해당 유저 없음 */
-    //     return SuccessResponse(
-    //         res,
-    //         sc.OK,
-    //         rm.REISSUE_TOKEN,
-    //         data
-    //     );
-    // } catch (error) {
-    //     console.log(error);
-    //     ErrorResponse(
-    //         res,
-    //         sc.INTERNAL_SERVER_ERROR,
-    //         rm.INTERNAL_SERVER_ERROR
-    //     );
-    // }
+    const tokenDto = req.query as SocialDTO;
+    const socialDto = req.params as SocialDTO;
+    try {
+        const authServiceInstance = new AuthService(User);
+        const data = await authServiceInstance.SocialLogin(tokenDto, socialDto);
+        /** @Error1 필수 요청 값 누락 */
+        if (data === Error.NULL_VALUE) {
+            return ErrorResponse(res, sc.BAD_REQUEST, rm.NULL_VALUE);
+        }
+        SuccessResponse(res, sc.CREATED, rm.LOGIN_SUCCESS, data);
+    } catch (error) {
+        console.log(error);
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+    }
 }
 
+// 로그아웃
+const logout = async (req: Request, res: Response) => {
+    const userDto = req.user as LoginDTO
+    try {
+        const authServiceInstance = new AuthService(User);
+        const data = await authServiceInstance.LogOut(userDto);
+        return SuccessResponse(res,sc.OK,rm.LOGOUT_SUCCESS,data);
+    } catch (error) {
+        console.log(error);
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+    }
+};
 
 
 const authController = {

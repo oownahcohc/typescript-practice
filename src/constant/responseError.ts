@@ -1,3 +1,4 @@
+// 값 자체보다 값이 구별되어야 할 때와 같이 코드의 의도를 알려주는데에 enum을 사용하자
 const enum Error {
     NULL_VALUE = 1, // 필요한 값이 없을 때
     WRONG_EMAIL_CONVENTION, // 이메일 형식이 잘못 되었을 때

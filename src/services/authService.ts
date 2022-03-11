@@ -1,29 +1,35 @@
 import { Service } from "typedi";
-import { LoginDTO, TokenDTO, SignupDTO, UserResponse } from "../interface/authDTO";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Error from "../constant/responseError";
 import isEmail from "validator/lib/isEmail";
+
+import Error from "../constant/responseError";
+import { NaverAuthAPI } from "../modules/clientApi";
 import { passwordValidator, verifyToken } from "../modules/validator";
+import { 
+    LoginDTO, 
+    TokenDTO, 
+    SignupDTO, 
+    UserResponse, 
+    SocialDTO, 
+    ErrorResponse, 
+    UserInfo } from "../interface/authDTO";
+
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
 @Service()
 class AuthService {
-    constructor(private userModel) {}
+    constructor(private readonly userModel) {}
 
-    public async SignUp (signupDto: SignupDTO) {
+    public async SignUp (signupDto: SignupDTO): Promise<ErrorResponse | UserResponse> {
         const { email, password, nickname } = signupDto;
-        /** @Error1 필수 요청 값 누락 */
-        if(!email || !password || !nickname) return Error.NULL_VALUE;
-        /** @Error2 이메일 형식 오류 */
+        if (!email || !password || !nickname) return Error.NULL_VALUE;
         if (!isEmail(email)) return Error.WRONG_EMAIL_CONVENTION;
-        /** @Error3 비밀번호 형식 오류 */
         if (!passwordValidator(password)) return Error.WRONG_PASSWORD_CONVENTION;
 
         try {
             const existUser = await this.userModel.findOne({ where: { email }});
-            /** @Error4 이미 존재하는 유저 */
             if (existUser) return Error.USER_ALREADY_EXIST;
 
             const salt = await bcrypt.genSalt(10);
@@ -32,7 +38,6 @@ class AuthService {
                 ...signupDto, // 전개 연산자: signupDto안에 담긴거 쫙 펼쳐줌 ㅋㅋ
                 password: hashedPassword,
             });
-            /** @Error5 유저 생성 실패 */
             if (!newUser) return Error.FAIL_SIGNUP;
 
             return { nickname: newUser.nickname };
@@ -43,23 +48,20 @@ class AuthService {
     }
 
 
-    public async LogIn (loginDto: LoginDTO) {
+    public async LogIn (loginDto: LoginDTO): Promise<ErrorResponse | { user: UserResponse }> {
         const { email, password } = loginDto;
-        /** @Error1 필수 요청 값 누락 */
         if(!email || !password) return Error.NULL_VALUE;
         //if (loginDto?.email || loginDto?.password) return Error.NULL_VALUE;
 
         try {
             const isUser = await this.userModel.findOne({ where: { email } });
-            /** @Error2 존재하지 않는 유저 */
             if (!isUser) return Error.NON_EXISTENT_USER;
 
             const isMatch = await bcrypt.compare(password, isUser.password);
-            /** @Error3 비밀번호가 일치하지 않음 */
             if (!isMatch) return Error.PW_NOT_CORRECT;
             
             // TODO: type 좁히기 생각해보자
-            const accessToken = this.issueAccessToken(isUser as UserResponse);
+            const accessToken = this.issueAccessToken(isUser as UserInfo);
             const refreshToken = this.issueRefreshToken();
             await this.userModel.update({
                 token: refreshToken,
@@ -69,7 +71,6 @@ class AuthService {
 
             return {
                 user: {
-                    social: isUser.social,
                     nickname: isUser.nickname,
                     accessToken,
                     refreshToken
@@ -82,25 +83,9 @@ class AuthService {
     }
 
 
-    public async LogOut (userDto: LoginDTO): Promise<boolean> {
-        const { email } = userDto;
-        try {
-            await this.userModel.update({
-                token: null,
-            }, {
-                where: { email }
-            });
-            return true;
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
-    }
 
-
-    public async ReissueToken (reissueTokenDto: TokenDTO) {
+    public async ReissueToken (reissueTokenDto: TokenDTO): Promise<ErrorResponse | { user: UserResponse }> {
         const { accessToken, refreshToken } = reissueTokenDto;
-        /** @Error1 필수 요청 값 누락 */
         if (!accessToken || !refreshToken) return Error.NULL_VALUE;
 
         try {
@@ -111,7 +96,6 @@ class AuthService {
                 return Error.TOKEN_EXPIRES;
             }
             const isUser = await this.userModel.findOne({ where: { token: refreshToken } });
-            /** @Error3 해당 유저 없음 */
             if (!isUser) return Error.NON_EXISTENT_USER;
 
             //const { accessToken } = jwtHandler.issueAccessToken(isUser);
@@ -130,15 +114,63 @@ class AuthService {
         }
     }
 
-    
-    private issueAccessToken (user: UserResponse): string {
+
+    public async SocialLogin (
+        tokenDto: SocialDTO, 
+        socialDto: SocialDTO
+    ): Promise<ErrorResponse | { user: UserResponse }> {
+        const { token } = tokenDto;
+        const { social } = socialDto;
+        if (!token || !social) return Error.NULL_VALUE;
+
+        let user;
+        try {
+            switch (social) {
+                case "naver": 
+                    user = await NaverAuthAPI(token);
+                    break;
+                case "kakao": 
+                    user = await NaverAuthAPI(token);
+                    break;
+                case "apple": 
+                    user = await NaverAuthAPI(token);
+                    break;
+            }
+
+            const refreshToken = this.issueRefreshToken();
+            const socialUser = await this.userModel.findOrCreate({
+                where: { email: user.email },
+                defaults: {
+                    social,
+                    email: user.email,
+                    nickname: user.nickname,
+                    password: null,
+                    token: refreshToken
+                }
+            });
+            const accessToken = this.issueAccessToken(socialUser);
+            return {
+                user: {
+                    nickname: user.nickname,
+                    accessToken,
+                    refreshToken
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+
+    private issueAccessToken (user: UserInfo): string {
         const payload = { 
             id: user.id,
             social: user.social,
             email: user.email,
             nickname: user.nickname
         };
-        const accessToken = jwt.sign(payload, process.env.JWT_SECRETE, {
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
             issuer: process.env.JWT_ISSUER,
             expiresIn: process.env.JWT_AC_EXPIRES,
         });
@@ -146,11 +178,27 @@ class AuthService {
     }
 
     private issueRefreshToken (): string {
-        const refreshToken = jwt.sign({}, process.env.JWT_SECRETE, {
+        const refreshToken = jwt.sign({}, process.env.JWT_SECRET, {
             issuer: process.env.JWT_ISSUER,
             expiresIn: process.env.JWT_RF_EXPIRES,
         });
         return refreshToken;
+    }
+
+
+    public async LogOut (userDto: LoginDTO): Promise<boolean> {
+        const { email } = userDto;
+        try {
+            await this.userModel.update({
+                token: null,
+            }, {
+                where: { email }
+            });
+            return true;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 }
 
