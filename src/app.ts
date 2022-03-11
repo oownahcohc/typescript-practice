@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser"
 import morgan from "morgan"
 import cors from "cors";
 import apiRouter from "./api/routes"
-import sequelize from "./models";
+import { connectDB } from "./loaders/db";
 
 function startServer() {
     const app = express();
@@ -17,23 +17,7 @@ function startServer() {
     */
 
     /**DB 관련 */
-    // 시퀄라이즈 연결
-    sequelize.authenticate()
-        .then(async () => {
-            console.log("✅ Connect PostgreSQL");
-        })
-        .catch((err) => {
-            console.log("TT : ", err);
-        });
-
-    // 시퀄라이즈 모델 DB에 싱크
-    sequelize.sync({ alter: true })
-        .then(() => {
-            console.log('✅ Sync Models to DB');
-        })
-        .catch((err) => {
-            console.log('❌ DB ERROR:', err);
-        });
+    connectDB();
 
     app.use(cors());
     app.use(logger);
@@ -52,7 +36,7 @@ function startServer() {
         });
     });
 
-    app.listen(3000, () => {
+    app.listen(process.env.PORT, () => {
         console.log(`
         ################################################
         🛡️  Server listening on port: http://localhost:3000 🛡️
