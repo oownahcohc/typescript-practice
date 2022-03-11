@@ -4,6 +4,10 @@
       "module": "commonjs",
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./src/*"]
+      },
       // 데코테이터 사용을 위한 설정
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
