@@ -39,7 +39,7 @@ function startServer() {
     app.listen(process.env.PORT, () => {
         console.log(`
         ################################################
-        🛡️  Server listening on port: http://localhost:3000 🛡️
+        🛡️  Server listening on port 🛡️
         ################################################
       `);
     })
