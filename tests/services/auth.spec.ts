@@ -1,8 +1,8 @@
 import assert from "assert";
 
-import AuthService from "../../src/services/authService"
+import AuthService from "../../src/services/auth/authService"
 import { User } from "../../src/models"
-import { SignupDTO } from "../../src/interface/authDTO";
+import { SignupDTO } from "../../src/services/auth/dto/authRequest";
 import Error from "../../src/constant/responseError";
 
 
