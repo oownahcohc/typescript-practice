@@ -11,7 +11,7 @@ export const passwordValidator = (pwd: string) => {
 export const verifyToken = (token: string) => {
     let decoded;
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRETE);
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
         if (error.message === "jwt expired") {
             console.log("토큰이 만료되었습니다");
