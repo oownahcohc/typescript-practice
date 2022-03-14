@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
-import { TokenDTO } from "../../interface/authDTO";
+import { TokenDTO } from "../../services/auth/dto/authRequest";
 import { User } from "../../models";
 import { ErrorResponse } from "../../modules/apiResponse";
 import { verifyToken } from "../../modules/validator";
@@ -13,13 +13,13 @@ const isAuth = async (
     res: Response, 
     next: NextFunction
 ) => {
-    const { accessToken } = req.headers as unknown as TokenDTO
-    if (!accessToken) {
+    const { accesstoken } = req.headers as unknown as TokenDTO
+    if (!accesstoken) {
         return ErrorResponse(res, sc.BAD_REQUEST, rm.TOKEN_EMPTY);
     }
 
     try {
-        const accessTokenDecoded = verifyToken(accessToken);
+        const accessTokenDecoded = verifyToken(accesstoken);
 
         if (accessTokenDecoded === TOKEN_EXPIRED) {
             return ErrorResponse(res, sc.UNAUTHORIZED, rm.TOKEN_EXPIRED);
@@ -40,7 +40,7 @@ const isAuth = async (
         next();
     } catch (error) {
         console.log(error);
-        console.error(`[AUTH ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, accessToken);
+        console.error(`[AUTH ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, accesstoken);
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
     }
 }
