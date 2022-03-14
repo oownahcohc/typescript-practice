@@ -37,7 +37,7 @@ export default class Room extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING(50))
-    roomTitle!: string;
+    roomTitle?: string;
 
     @BelongsTo(() => User)
     user!: User

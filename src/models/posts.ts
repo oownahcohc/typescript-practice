@@ -49,7 +49,7 @@ export default class Post extends Model {
 
     @AllowNull(true)
     @Column(DataType.ARRAY(DataType.STRING))
-    imageUrl!: string[];
+    imageUrl?: string[];
 
     @Default(false)
     @Column(DataType.BOOLEAN)
