@@ -40,6 +40,10 @@ const ResultMessage = {
   SEARCH_POST_SUCCESS: "포스트 검색 성공",
   NO_SEARCH_POST: "포스트 검색 결과 없음",
   NO_POST: "존재하지 않는 포스트입니다.",
+
+  // 댓글
+  ADD_COMMENT_SUCCESS: "댓글 등록 성공",
+  ADD_NESTED_COMMENT_SUCCESS: "대댓글 등록 성공",
   
   // 서버 내 오류
   INTERNAL_SERVER_ERROR: "서버 내 오류",

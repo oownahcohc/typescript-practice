@@ -11,8 +11,8 @@ import {
     TokenDTO, 
     SignupDTO,  
     SocialDTO,  
-    UserInfo } from "./dto/authRequest";
-import { AuthResponse, SignupResponse, Token} from "./dto/authResponse";
+    UserInfo } from "../../interface/dto/request/authRequest";
+import { AuthResponse, SignupResponse, Token} from "../../interface/dto/response/authResponse";
 
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
@@ -50,7 +50,6 @@ class AuthService {
     public async LogIn (loginDto: LoginDTO): Promise<AuthResponse> {
         const { email, password } = loginDto;
         if(!email || !password) return Error.NULL_VALUE;
-        //if (loginDto?.email || loginDto?.password) return Error.NULL_VALUE;
 
         try {
             const isUser = await this.userModel.findOne({ where: { email } });
@@ -88,7 +87,6 @@ class AuthService {
         if (!accesstoken || !refreshtoken) return Error.NULL_VALUE;
 
         try {
-            //const refreshTokenDecoded = jwtHandler.verifyToken(refreshtoken);
             const refreshTokenDecoded = verifyToken(refreshtoken);
             /** @Error2 리프레시 토큰도 만료 => 재로그인 요청 */
             if (refreshTokenDecoded === TOKEN_EXPIRED || refreshTokenDecoded === TOKEN_INVALID) {
@@ -97,7 +95,6 @@ class AuthService {
             const isUser = await this.userModel.findOne({ where: { token: refreshtoken } });
             if (!isUser) return Error.NON_EXISTENT_USER;
 
-            //const { accesstoken } = jwtHandler.issueAccessToken(isUser);
             // TODO: type 좁히기 생각해보자
             const accesstoken = this.issueAccessToken(isUser);
             return {
@@ -122,7 +119,7 @@ class AuthService {
         const { social } = socialDto;
         if (!token || !social) return Error.NULL_VALUE;
 
-        let user;
+        let user: any;
         try {
             switch (social) {
                 case "naver": 
