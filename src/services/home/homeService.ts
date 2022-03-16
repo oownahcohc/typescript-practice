@@ -10,7 +10,7 @@ class HomeService {
 
     public async getMainPage() {
         try {
-            const home = await this.postModel.findAll({ 
+            const posts = await this.postModel.findAll({ 
                 order: [["createdAt", "DESC"]],
                 include: [{
                     model: Comment
@@ -20,8 +20,8 @@ class HomeService {
                     model: PostDisLike
                 }]
             });
-            if (!home) return Error.DB_NOT_FOUND;
-            return { home };
+            if (!posts) return Error.DB_NOT_FOUND;
+            return { posts };
         } catch (error) {
             console.log(error);
             throw error;
