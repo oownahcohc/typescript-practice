@@ -43,6 +43,10 @@ export default class Comment extends Model { // 모델 설정
     @Column(DataType.INTEGER)
     postId!: number;
 
+    @AllowNull(false)
+    @Column(DataType.STRING(300))
+    comment!: string;
+
     @AllowNull(true)
     @Column(DataType.INTEGER)
     commentGroupId!: number;
