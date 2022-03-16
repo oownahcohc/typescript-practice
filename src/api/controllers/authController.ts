@@ -2,7 +2,7 @@
 // service 의존성 주입을 하고, dto형식, 응답 형식에 대한 ~
 // import Container from "typedi";
 import { Request, Response } from "express";
-import { LoginDTO, TokenDTO, SignupDTO, SocialDTO } from "../../services/auth/dto/authRequest";
+import { LoginDTO, TokenDTO, SignupDTO, SocialDTO } from "../../interface/dto/request/authRequest";
 import Error from "../../constant/responseError";
 import { User } from "../../models";
 import AuthService from "../../services/auth/authService";

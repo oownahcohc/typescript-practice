@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
-import { TokenDTO } from "../../services/auth/dto/authRequest";
+import { TokenDTO } from "../../interface/dto/request/authRequest";
 import { User } from "../../models";
 import { ErrorResponse } from "../../modules/apiResponse";
 import { verifyToken } from "../../modules/validator";
