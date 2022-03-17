@@ -8,8 +8,9 @@ export const passwordValidator = (pwd: string) => {
     else return true;
 };
 
+
 export const verifyToken = (token: string) => {
-    let decoded;
+    let decoded: any;
     try {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
@@ -26,3 +27,18 @@ export const verifyToken = (token: string) => {
     }
     return decoded;
 }
+
+
+export function isTokenExpired (decoded: any) {
+    return decoded === TOKEN_EXPIRED || decoded === TOKEN_INVALID
+}
+
+
+// export function isNullValues(obj: object): boolean | undefined {
+//     // TODO: [Symbol.iterator], generator 사용하기
+//     for (let key in obj) {
+//         console.log(obj[key]);
+//         if (obj[key] === undefined) return false;
+//         else return true;
+//     }
+// }
