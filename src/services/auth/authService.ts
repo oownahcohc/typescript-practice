@@ -5,7 +5,7 @@ import isEmail from "validator/lib/isEmail";
 
 import Error from "../../constant/responseError";
 import { NaverAuthAPI } from "./client/naverApiClient";
-import { passwordValidator, verifyToken } from "../../modules/validator";
+import { isTokenExpired, passwordValidator, verifyToken } from "../../modules/validator";
 import { 
     LoginDTO, 
     TokenDTO, 
@@ -13,9 +13,6 @@ import {
     SocialDTO,  
     UserInfo } from "../../interface/dto/request/authRequest";
 import { AuthResponse, SignupResponse, Token} from "../../interface/dto/response/authResponse";
-
-const TOKEN_EXPIRED = -3;
-const TOKEN_INVALID = -2;
 
 @Service()
 class AuthService {
@@ -88,10 +85,8 @@ class AuthService {
 
         try {
             const refreshTokenDecoded = verifyToken(refreshtoken);
-            /** @Error2 리프레시 토큰도 만료 => 재로그인 요청 */
-            if (refreshTokenDecoded === TOKEN_EXPIRED || refreshTokenDecoded === TOKEN_INVALID) {
-                return Error.TOKEN_EXPIRES;
-            }
+            if (isTokenExpired(refreshTokenDecoded)) return Error.TOKEN_EXPIRES;
+
             const isUser = await this.userModel.findOne({ where: { token: refreshtoken } });
             if (!isUser) return Error.NON_EXISTENT_USER;
 

@@ -1,7 +1,7 @@
 import assert from "assert";
 import { Comment } from "../../src/models";
 import CommentService from "../../src/services/comment/commentService"
-import { CommentDTO } from "../../src/services/comment/dto/commentRequest";
+import { CommentDTO } from "../../src/interface/dto/request/commentRequest";
 
 describe("/api/comment", () => {
     const commentServiceInstance = new CommentService(Comment);
